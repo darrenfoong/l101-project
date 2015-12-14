@@ -1,0 +1,9 @@
+bin
+data
+lib
+output
+src/.git
+src/.gitignore
+.classpath
+.project
+Makefile
