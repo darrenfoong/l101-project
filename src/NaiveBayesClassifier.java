@@ -1,15 +1,15 @@
 import java.util.ArrayList;
 
+import reader.CorpusReader;
+import reader.GenSpamReader;
+import reader.PuReader;
+import reader.TrecReader;
 import cc.mallet.classify.Classification;
 import cc.mallet.classify.NaiveBayes;
 import cc.mallet.classify.NaiveBayesTrainer;
 import cc.mallet.classify.Trial;
 import cc.mallet.types.CrossValidationIterator;
 import cc.mallet.types.InstanceList;
-import reader.CorpusReader;
-import reader.GenSpamReader;
-import reader.PuReader;
-import reader.TrecReader;
 
 public class NaiveBayesClassifier {
 	public static void main(String[] args) {
@@ -32,7 +32,8 @@ public class NaiveBayesClassifier {
 			default: break;
 		}
 
-		corpusReader.read();
+		corpusReader.readFeatures();
+		corpusReader.readInstances();
 
 		NaiveBayesTrainer nbTrainer = new NaiveBayesTrainer();
 		InstanceList instances = corpusReader.getInstances();

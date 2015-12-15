@@ -1,11 +1,12 @@
 package reader;
 
-public class GenSpamReader extends CorpusReader {
+import cc.mallet.pipe.Pipe;
+import cc.mallet.types.Alphabet;
 
+public class GenSpamReader extends CorpusReader {
 	@Override
-	public void read() {
+	public Pipe buildFeaturePipe(Alphabet dataAlphabet) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
-	
 }
