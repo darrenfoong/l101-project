@@ -20,10 +20,12 @@ public class Distribution {
 	}
 
 	public double getProb(int i) {
-		return ((double) dist[i])/((double) sum);
+		// add-one smoothing
+		return ((double) (dist[i]+1))/((double) (sum+dist.length));
 	}
 
 	public double getLogProb(int i) {
-		return Math.log((double) dist[i]) - Math.log((double) sum);
+		// add-one smoothing
+		return Math.log((double) (dist[i]+1)) - Math.log((double) (sum+dist.length));
 	}
 }

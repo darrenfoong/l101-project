@@ -32,10 +32,12 @@ public class BiDistribution {
 	}
 
 	public double getProb(IntPair ip) {
-		return ((double) dist.get(ip))/((double) sum);
+		// add-one smoothing
+		return ((double) (dist.get(ip)+1))/((double) (sum+dist.size()));
 	}
 
 	public double getLogProb(IntPair ip) {
-		return Math.log((double) dist.get(ip)) - Math.log((double) sum);
+		// add-one smoothing
+		return Math.log((double) (dist.get(ip)+1)) - Math.log((double) (sum+dist.size()));
 	}
 }
