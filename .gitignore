@@ -6,4 +6,6 @@ src/.git
 src/.gitignore
 .classpath
 .project
+compile
 Makefile
+run

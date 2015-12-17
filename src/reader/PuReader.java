@@ -7,7 +7,6 @@ import cc.mallet.pipe.CharSequence2TokenSequence;
 import cc.mallet.pipe.FeatureSequence2FeatureVector;
 import cc.mallet.pipe.Input2CharSequence;
 import cc.mallet.pipe.Pipe;
-import cc.mallet.pipe.PrintInputAndTarget;
 import cc.mallet.pipe.SerialPipes;
 import cc.mallet.pipe.Target2Label;
 import cc.mallet.pipe.TokenSequence2FeatureSequence;
@@ -32,7 +31,6 @@ public class PuReader extends CorpusReader {
 		pipeList.add(new FeatureSequence2FeatureVector(true));
 
 		pipeList.add(new Target2Label());
-		pipeList.add(new PrintInputAndTarget());
 
 		return new SerialPipes(pipeList);
 	}
