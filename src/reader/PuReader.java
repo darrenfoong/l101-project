@@ -13,6 +13,10 @@ import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.types.Alphabet;
 
 public class PuReader extends CorpusReader {
+	public PuReader(int cutoff) {
+		super(cutoff);
+	}
+
 	public Pipe buildFeaturePipe(Alphabet dataAlphabet) {
 		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
 

@@ -26,11 +26,12 @@ public abstract class CorpusReader {
 	protected final static short HAM0 = 2;
 	protected final static short HAM1 = 3;
 
-	protected final static int CUTOFF = 50;
+	protected final int CUTOFF;
 
-	protected InstanceList instances;
+	protected InstanceList featureInstances;
+	protected InstanceList dataInstances;
 
-	protected Distribution cDist = new Distribution(2);
+	protected Distribution cDist = null;
 	protected Distribution[] xDists = null;
 	protected Distribution[] xcDists = null;
 
@@ -38,8 +39,16 @@ public abstract class CorpusReader {
 
 	protected ArrayList<IntDoublePair> mutualInfo = new ArrayList<IntDoublePair>();
 
-	public InstanceList getInstances() {
-		return instances;
+	protected CorpusReader(int cutoff) {
+		CUTOFF = cutoff;
+	}
+
+	public InstanceList getFeatureInstances() {
+		return featureInstances;
+	}
+
+	public InstanceList getDataInstances() {
+		return dataInstances;
 	}
 
 	public abstract Pipe buildFeaturePipe(Alphabet dataAlphabet);
@@ -58,16 +67,35 @@ public abstract class CorpusReader {
 		return tempInstances;
 	}
 
-	public void read() {
-		System.out.println("Reading features from [todo].");
+	public void readData(File[] directories) {
+		System.out.println("Reading data from:");
 
-		instances = readDirectory(new File("data/pu1/bare/part1"), null);
+		for ( File directory : directories ) {
+			System.out.println("> " + directory.getPath());
+		}
 
-		int numFeatures = instances.getDataAlphabet().size();
+		dataInstances = readDirectories(directories, newAlphabet);
 
-		System.out.println(" Number of instances: " + instances.size());
+		System.out.println(" Number of data instances: " + dataInstances.size());
+
+		System.out.println("Data read.");
+	}
+
+	public void readFeatures(File[] directories) {
+		System.out.println("Reading features from:");
+
+		for ( File directory : directories ) {
+			System.out.println("> " + directory.getPath());
+		}
+
+		featureInstances = readDirectories(directories, null);
+
+		int numFeatures = featureInstances.getDataAlphabet().size();
+
+		System.out.println(" Number of feature instances: " + featureInstances.size());
 		System.out.println(" Number of features: " + numFeatures);
 
+		cDist = new Distribution(2);
 		xDists = new Distribution[numFeatures];
 		xcDists = new Distribution[numFeatures];
 
@@ -76,7 +104,7 @@ public abstract class CorpusReader {
 			xcDists[i] = new Distribution(4);
 		}
 
-		Iterator<Instance> iter = instances.iterator();
+		Iterator<Instance> iter = featureInstances.iterator();
 
 		while ( iter.hasNext() ) {
 			Instance instance = iter.next();
@@ -99,7 +127,9 @@ public abstract class CorpusReader {
 	public void computeMutualInfo() {
 		System.out.println("Computing mutual information.");
 
-		int numFeatures = instances.getDataAlphabet().size();
+		mutualInfo.clear();
+
+		int numFeatures = featureInstances.getDataAlphabet().size();
 
 		for ( int featureID = 0; featureID < numFeatures; featureID++ ) {
 			double spam0 = xcDists[featureID].getProb(SPAM0)
@@ -130,7 +160,7 @@ public abstract class CorpusReader {
 	public void pruneAlphabet() {
 		System.out.println("Pruning alphabet.");
 
-		Alphabet currentAlphabet = instances.getAlphabet();
+		Alphabet currentAlphabet = featureInstances.getAlphabet();
 		System.out.println(" Current alphabet has " + currentAlphabet.size() + " features.");
 
 		int oldIndices[] = new int[CUTOFF];
@@ -146,7 +176,7 @@ public abstract class CorpusReader {
 		newAlphabet.stopGrowth();
 		// this prevents changes to newAlphabet in subsequent calls to constructor for FeatureVector
 
-		System.out.println(" New alphabet has " + newAlphabet.size() + " features.");
+		System.out.println(" New alphabet has " + newAlphabet.size() + " features; cutoff is " + CUTOFF + ".");
 		System.out.println("Alphabet pruned.");
 	}
 
@@ -192,9 +222,9 @@ public abstract class CorpusReader {
 	public void changeAllAlphabets() {
 		System.out.println("Changing all alphabets.");
 
-		InstanceList newInstances = new InstanceList(newAlphabet, instances.getTargetAlphabet());
+		InstanceList newInstances = new InstanceList(newAlphabet, featureInstances.getTargetAlphabet());
 
-		Iterator<Instance> iter = instances.iterator();
+		Iterator<Instance> iter = featureInstances.iterator();
 
 		while ( iter.hasNext() ) {
 			Instance instance = iter.next();
@@ -205,7 +235,7 @@ public abstract class CorpusReader {
 			newInstances.add(instance);
 		}
 
-		instances = newInstances;
+		featureInstances = newInstances;
 
 		System.out.println("All alphabets changed.");
 	}
