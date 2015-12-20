@@ -17,6 +17,7 @@ public class PuReader extends CorpusReader {
 		super(cutoff);
 	}
 
+	@Override
 	public Pipe buildFeaturePipe(Alphabet dataAlphabet) {
 		ArrayList<Pipe> pipeList = new ArrayList<Pipe>();
 

@@ -14,17 +14,17 @@ import cc.mallet.types.CrossValidationIterator;
 import cc.mallet.types.InstanceList;
 
 public class NaiveBayesClassifier {
+	private static final int NFOLDS = 10;
+	private static final int CUTOFF = 50;
+	private static final double LAMBDA = 1;
+
+	private static CorpusReader corpusReader = null;
+	private static String directory;
+
+	private static Statistics stats = new Statistics();
+
 	public static void main(String[] args) {
-		final int NFOLDS = 10;
-		final int CUTOFF = 50;
-		final double LAMBDA = 1;
-
 		String corpus = args[0];
-
-		CorpusReader corpusReader = null;
-		String directory;
-
-		Statistics stats = new Statistics();
 
 		switch (corpus) {
 			case "pu1":
@@ -48,7 +48,7 @@ public class NaiveBayesClassifier {
 				break;
 			case "trec07":
 				corpusReader = new TrecReader(CUTOFF);
-				directory = "data/trec07";
+				directory = "data/trec07/";
 				System.out.println("Starting TREC 2007 reader.");
 				break;
 			default:
@@ -69,7 +69,7 @@ public class NaiveBayesClassifier {
 					if ( j != i ) {
 						// add all partj except for current i,
 						// which is used for evaluation
-						trainDirectories.add(new File(directory + "part" + j));
+						trainDirectories.add(new File(directory + "part" + j + "/"));
 					}
 				}
 
@@ -79,35 +79,21 @@ public class NaiveBayesClassifier {
 					trainDirectoriesArray[j] = trainDirectories.get(j);
 				}
 
-				File testDirectory = new File(directory + "part" + i);
+				File testDirectory = new File(directory + "part" + i + "/");
 
-				corpusReader.readFeatures(trainDirectoriesArray);
-				corpusReader.computeMutualInfo();
-				corpusReader.pruneAlphabet();
-
-				corpusReader.readData(new File[] {testDirectory});
-
-				System.out.println("Naive Bayes classifer initialised.");
-
-				NaiveBayesTrainer nbTrainer = new NaiveBayesTrainer();
-				InstanceList featureInstances = corpusReader.getFeatureInstances();
-				InstanceList dataInstances = corpusReader.getDataInstances();
-
-				nbTrainer.train(featureInstances);
-				NaiveBayes nbClassifier = nbTrainer.getClassifier();
-
-				ArrayList<Classification> results = nbClassifier.classify(dataInstances);
-				Evaluator evaluator = new Evaluator(LAMBDA, results);
-				System.out.println("Evaluator initialised with lambda = " + LAMBDA);
-
-				double tcr = evaluator.getTotalCostRatio();
-				stats.put("tcr", tcr);
-				System.out.println(" TCR: " + tcr);
-
-				System.out.println();
+				runNaiveBayes(trainDirectoriesArray, new File[] {testDirectory});
 			}
 
 			System.out.println("Average TCR: " + stats.getAverage("tcr"));
+
+			return;
+		}
+
+		if ( corpus.equals("genspam") ) {
+			File trainDirectory = new File(directory + "train/");
+			File testDirectory = new File(directory + "test/");
+
+			runNaiveBayes(new File[] {trainDirectory}, new File[] {testDirectory});
 
 			return;
 		}
@@ -146,5 +132,32 @@ public class NaiveBayesClassifier {
 		}
 
 		System.out.println("Average TCR: " + stats.getAverage("tcr"));
+	}
+
+	private static void runNaiveBayes(File[] trainDirectoriesArray, File[] testDirectoriesArray) {
+		corpusReader.readFeatures(trainDirectoriesArray);
+		corpusReader.computeMutualInfo();
+		corpusReader.pruneAlphabet();
+
+		corpusReader.readData(testDirectoriesArray);
+
+		System.out.println("Naive Bayes classifer initialised.");
+
+		NaiveBayesTrainer nbTrainer = new NaiveBayesTrainer();
+		InstanceList featureInstances = corpusReader.getFeatureInstances();
+		InstanceList dataInstances = corpusReader.getDataInstances();
+
+		nbTrainer.train(featureInstances);
+		NaiveBayes nbClassifier = nbTrainer.getClassifier();
+
+		ArrayList<Classification> results = nbClassifier.classify(dataInstances);
+		Evaluator evaluator = new Evaluator(LAMBDA, results);
+		System.out.println("Evaluator initialised with lambda = " + LAMBDA);
+
+		double tcr = evaluator.getTotalCostRatio();
+		stats.put("tcr", tcr);
+		System.out.println(" TCR: " + tcr);
+
+		System.out.println();
 	}
 }
