@@ -26,6 +26,12 @@ counts = {
   "test_spam": 797,
   "test_ham": 754 }
 
+output_folders = {
+  "train_spam": "../data/genspam/train/spam/",
+  "train_ham": "../data/genspam/train/ham/",
+  "test_spam": "../data/genspam/test/spam/",
+  "test_ham": "../data/genspam/test/ham/" }
+
 # substitutions
 
 toRemove1 = ["&NAME", "&NUM", "&WEBSITE", "&CHAR", "&EMAIL", "&ORG", "&SMILEY"]
@@ -78,6 +84,36 @@ for fkey in data.keys():
     print "correct."
   else:
     print "wrong."
+
+  for i, message in enumerate(messageList, 1):
+    output = open(output_folders[fkey] + str(i) + ".txt", "w")
+
+    subject = message.getElementsByTagName("SUBJECT")
+    if subject:
+      subject_inner = subject[0].getElementsByTagName("TEXT_NORMAL")
+      if subject_inner:
+        subject_text = subject_inner[0].firstChild.nodeValue
+      else:
+        subject_text = ""
+    else:
+      subject_text = ""
+
+    messageBody = message.getElementsByTagName("MESSAGE_BODY")
+    if messageBody:
+      messageBody_inner = messageBody[0].getElementsByTagName("TEXT_NORMAL")
+      if messageBody_inner:
+        messageBody_text = messageBody_inner[0].firstChild.nodeValue
+      else:
+        messageBody_text = ""
+    else:
+      messageBody_text = ""
+
+    output.write(subject_text)
+    output.write("\n\n")
+    output.write(messageBody_text)
+    output.close()
+
+  print "Generated individual files for " + fkey + " in " + output_folders[fkey] + "."
 
 # cleaning up
 
