@@ -34,23 +34,23 @@ output_folders = {
 
 # substitutions
 
-toRemove1 = ["&NAME", "&NUM", "&WEBSITE", "&CHAR", "&EMAIL", "&ORG", "&SMILEY"]
-toRemove2 = ["[[:cntrl:]]","<a href=\">"]
+to_remove1 = ["&NAME", "&NUM", "&WEBSITE", "&CHAR", "&EMAIL", "&ORG", "&SMILEY"]
+to_remove2 = ["[[:cntrl:]]","<a href=\">"]
 
 patterns = []
 
-def genRemovePattern(removePatterns):
+def gen_remove_pattern(remove_patterns):
   pattern = "s/";
 
-  for e in removePatterns[:-1]:
+  for e in remove_patterns[:-1]:
     pattern += "\(" + e + "\)\|"
 
-  pattern += "\(" + removePatterns[-1] + "\)//g"
+  pattern += "\(" + remove_patterns[-1] + "\)//g"
 
   return pattern
 
-patterns.append(genRemovePattern(toRemove1))
-patterns.append(genRemovePattern(toRemove2))
+patterns.append(gen_remove_pattern(to_remove1))
+patterns.append(gen_remove_pattern(to_remove2))
 patterns.append("s/&/&amp;/g")
 patterns.append("s/Message-ID: </Message-ID: /g")
 
@@ -76,16 +76,16 @@ for fkey in data.keys():
   print "Parsing " + fname
 
   doc = minidom.parse(f)
-  messageList = doc.getElementsByTagName("MESSAGE")
+  message_list = doc.getElementsByTagName("MESSAGE")
 
-  numMessages = len(messageList)
-  print fkey + ": " + str(numMessages) + " messages;",
-  if numMessages == counts[fkey]:
+  num_messages = len(message_list)
+  print fkey + ": " + str(num_messages) + " messages;",
+  if num_messages == counts[fkey]:
     print "correct."
   else:
     print "wrong."
 
-  for i, message in enumerate(messageList, 1):
+  for i, message in enumerate(message_list, 1):
     output = open(output_folders[fkey] + str(i) + ".txt", "w")
 
     subject = message.getElementsByTagName("SUBJECT")
@@ -98,19 +98,19 @@ for fkey in data.keys():
     else:
       subject_text = ""
 
-    messageBody = message.getElementsByTagName("MESSAGE_BODY")
-    if messageBody:
-      messageBody_inner = messageBody[0].getElementsByTagName("TEXT_NORMAL")
-      if messageBody_inner:
-        messageBody_text = messageBody_inner[0].firstChild.nodeValue
+    message_body = message.getElementsByTagName("MESSAGE_BODY")
+    if message_body:
+      message_body_inner = message_body[0].getElementsByTagName("TEXT_NORMAL")
+      if message_body_inner:
+        message_body_text = message_body_inner[0].firstChild.nodeValue
       else:
-        messageBody_text = ""
+        message_body_text = ""
     else:
-      messageBody_text = ""
+      message_body_text = ""
 
     output.write(subject_text)
     output.write("\n\n")
-    output.write(messageBody_text)
+    output.write(message_body_text)
     output.close()
 
   print "Generated individual files for " + fkey + " in " + output_folders[fkey] + "."
