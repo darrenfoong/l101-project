@@ -46,9 +46,9 @@ public class NaiveBayesClassifier {
 				directory = "data/genspam/";
 				System.out.println("Starting GenSpam reader.");
 				break;
-			case "trec07":
+			case "trec07p":
 				corpusReader = new TrecReader(CUTOFF);
-				directory = "data/trec07/";
+				directory = "data/trec07p/";
 				System.out.println("Starting TREC 2007 reader.");
 				break;
 			default:
@@ -89,7 +89,7 @@ public class NaiveBayesClassifier {
 			return;
 		}
 
-		if ( corpus.equals("genspam") ) {
+		if ( corpus.equals("genspam") || corpus.equals("trec07p") ) {
 			File trainDirectory = new File(directory + "train/");
 			File testDirectory = new File(directory + "test/");
 

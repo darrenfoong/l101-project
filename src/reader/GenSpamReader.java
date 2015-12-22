@@ -1,5 +1,6 @@
 package reader;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
@@ -11,6 +12,7 @@ import cc.mallet.pipe.SerialPipes;
 import cc.mallet.pipe.Target2Label;
 import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.pipe.TokenSequenceLowercase;
+import cc.mallet.pipe.TokenSequenceRemoveStopwords;
 import cc.mallet.types.Alphabet;
 
 public class GenSpamReader extends CorpusReader {
@@ -26,8 +28,8 @@ public class GenSpamReader extends CorpusReader {
 
 		Pattern tokenPattern = Pattern.compile("[\\p{L}\\p{N}']+");
 		pipeList.add(new CharSequence2TokenSequence(tokenPattern));
-		// TODO: remove stopwords
 		pipeList.add(new TokenSequenceLowercase());
+		pipeList.add(new TokenSequenceRemoveStopwords(new File("../data/bnc/top100"), "UTF-8", false, false, false));
 
 		if ( dataAlphabet == null ) {
 			pipeList.add(new TokenSequence2FeatureSequence());
