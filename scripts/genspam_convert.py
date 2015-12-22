@@ -4,6 +4,12 @@ from xml.dom import minidom
 import os
 import codecs
 import sys
+import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.tag.perceptron import PerceptronTagger
+
+# for speed
+tagger = PerceptronTagger()
 
 reload(sys)
 sys.setdefaultencoding("utf8")
@@ -70,6 +76,14 @@ for fname in data.values():
 
 # reading
 
+def simplify_tag(w, pos):
+  if pos == "ADJ":
+    return (w, "a")
+  elif pos == "VERB":
+    return (w, "v")
+  else:
+    return (w, "n")
+
 for fkey in data.keys():
   fname = data[fkey] + TMP_EXT
   f = codecs.open(fname, 'r', 'utf8', 'replace')
@@ -108,9 +122,16 @@ for fkey in data.keys():
     else:
       message_body_text = ""
 
-    output.write(subject_text)
-    output.write("\n\n")
-    output.write(message_body_text)
+    # lemmatise
+
+    full_message = subject_text + " " + message_body_text 
+
+    # nltk.pos_tag is very slow!
+    full_message_tagged = nltk.tag._pos_tag(nltk.word_tokenize(full_message), "Universal", tagger)
+    full_message_tagged = map((lambda (w, pos): simplify_tag(w, pos)), full_message_tagged)
+    full_message_lemm = map((lambda (w, pos): WordNetLemmatizer().lemmatize(w, pos)), full_message_tagged)
+
+    output.write(" ".join(full_message_lemm))
     output.close()
 
   print "Generated individual files for " + fkey + " in " + output_folders[fkey] + "."

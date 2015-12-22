@@ -2,8 +2,18 @@
 
 from email.parser import Parser
 import os
+import sys
 import re
 import cgi
+import nltk
+from nltk.stem import WordNetLemmatizer
+from nltk.tag.perceptron import PerceptronTagger
+
+# for speed
+tagger = PerceptronTagger()
+
+reload(sys)
+sys.setdefaultencoding("utf8")
 
 # input data
 
@@ -39,10 +49,29 @@ def flatten(msg):
     mlist =  map((lambda m: flatten(m)), msg.get_payload())
     return [item for sublist in mlist for item in sublist]
   else:
-    if msg.get_content_type() == "text/html":
-      return [remove_html(msg.get_payload())]
+    charset = msg.get_param("charset")
+    # print "Charset: " + str(charset)
+    payload = msg.get_payload()
+    if charset != None:
+      try:
+        payload = payload.decode(charset, "replace")
+      except LookupError:
+        payload = msg.get_payload().decode("utf8", "replace")
     else:
-      return [msg.get_payload()]
+      payload = payload.decode("utf8", "replace") 
+
+    if msg.get_content_type() == "text/html":
+      return [remove_html(payload)]
+    else:
+      return [payload]
+
+def simplify_tag(w, pos):
+  if pos == "ADJ":
+    return (w, "a")
+  elif pos == "VERB":
+    return (w, "v")
+  else:
+    return (w, "n")
 
 for i in range(1,label_counter+1):
   print "Processing message #" + str(i)
@@ -50,12 +79,27 @@ for i in range(1,label_counter+1):
   output = open("../data/trec07p/test/" + labels[i] + "/" + str(i) + ".txt", "w") 
   msg = Parser().parse(f)
 
-  subject_line = msg.get("Subject", "")
+  subject_line = msg.get("Subject", "").decode("utf8", "replace")
 
   contents = flatten(msg)
-  new_lines = [subject_line] + contents 
-  new_lines = map((lambda s: s.split("\n")), new_lines)
-  new_lines = [item for sublist in new_lines for item in sublist]
-  new_lines = map((lambda s: s + "\n"), new_lines)
-  output.writelines(new_lines)
+  new_lines = [subject_line+"\n"] + contents 
+  # new_lines = map((lambda s: s.split("\n")), new_lines)
+  # new_lines = [item for sublist in new_lines for item in sublist]
+  # new_lines = map((lambda s: s + "\n"), new_lines)
+
+  # lemmatise
+
+  full_message = "".join(new_lines)
+
+  def g((w, pos)):
+    # print w
+    return WordNetLemmatizer().lemmatize(w, pos)
+
+  # nltk.pos_tag is very slow!
+  full_message_tagged = nltk.tag._pos_tag(nltk.word_tokenize(full_message), "Universal", tagger)
+  full_message_tagged = map((lambda (w, pos): simplify_tag(w, pos)), full_message_tagged)
+  full_message_lemm = map(g, full_message_tagged) 
+
+  output.write(" ".join(full_message_lemm))
+  output.close()
   f.close()
