@@ -8,11 +8,11 @@ import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tag.perceptron import PerceptronTagger
 
-# for speed
-tagger = PerceptronTagger()
-
 reload(sys)
 sys.setdefaultencoding("utf8")
+
+# for speed
+tagger = PerceptronTagger()
 
 # constants
 
