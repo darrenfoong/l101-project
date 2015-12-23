@@ -31,6 +31,9 @@ public class TrecReader extends CorpusReader {
 		pipeList.add(new TokenSequenceLowercase());
 		pipeList.add(new TokenSequenceRemoveStopwords(new File("../data/bnc/top100"), "UTF-8", false, false, false));
 
+		int[] ns = {2};
+		pipeList.add(new TokenSequence2TokenSequenceNGrams(ns));
+
 		if ( dataAlphabet == null ) {
 			pipeList.add(new TokenSequence2FeatureSequence());
 		} else {

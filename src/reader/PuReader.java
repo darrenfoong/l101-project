@@ -26,6 +26,9 @@ public class PuReader extends CorpusReader {
 		Pattern tokenPattern = Pattern.compile("[0-9]+");
 		pipeList.add(new CharSequence2TokenSequence(tokenPattern));
 
+		int[] ns = {2};
+		pipeList.add(new TokenSequence2TokenSequenceNGrams(ns));
+
 		if ( dataAlphabet == null ) {
 			pipeList.add(new TokenSequence2FeatureSequence());
 		} else {
