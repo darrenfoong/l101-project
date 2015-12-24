@@ -7,6 +7,7 @@ import sys
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tag.perceptron import PerceptronTagger
+import HTMLParser
 
 reload(sys)
 sys.setdefaultencoding("utf8")
@@ -57,7 +58,7 @@ def gen_remove_pattern(remove_patterns):
 
 patterns.append(gen_remove_pattern(to_remove1))
 patterns.append(gen_remove_pattern(to_remove2))
-patterns.append("s/&/&amp;/g")
+patterns.append("s/&/GENSPAM_AMPERSAND/g")
 patterns.append("s/Message-ID: </Message-ID: /g")
 
 for fname in data.values():
@@ -76,7 +77,7 @@ for fname in data.values():
 
 # reading
 
-def simplify_tag(w, pos):
+def simplify_tag((w, pos)):
   if pos == "ADJ":
     return (w, "a")
   elif pos == "VERB":
@@ -125,10 +126,12 @@ for fkey in data.keys():
     # lemmatise
 
     full_message = subject_text + " " + message_body_text 
+    full_message = full_message.replace("GENSPAM_AMPERSAND", "&")
+    full_message = HTMLParser.HTMLParser().unescape(full_message)
 
     # nltk.pos_tag is very slow!
     full_message_tagged = nltk.tag._pos_tag(nltk.word_tokenize(full_message), "Universal", tagger)
-    full_message_tagged = map((lambda (w, pos): simplify_tag(w, pos)), full_message_tagged)
+    full_message_tagged = map(simplify_tag, full_message_tagged)
     full_message_lemm = map((lambda (w, pos): WordNetLemmatizer().lemmatize(w, pos)), full_message_tagged)
 
     output.write(" ".join(full_message_lemm))

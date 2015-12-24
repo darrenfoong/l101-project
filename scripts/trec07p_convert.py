@@ -8,6 +8,7 @@ import cgi
 import nltk
 from nltk.stem import WordNetLemmatizer
 from nltk.tag.perceptron import PerceptronTagger
+import HTMLParser
 
 reload(sys)
 sys.setdefaultencoding("utf8")
@@ -49,9 +50,11 @@ f_07.close()
 print "Read " + str(label_counter_07) + " labels for 2007; length of labels is " + str(len(labels_07)) + "."
 
 def remove_html(msg):
+  style_re = re.compile(r'(<style>.*?</style>)',flags=re.DOTALL)
+  msg = style_re.sub("", msg)
   tag_re = re.compile(r'(<!--.*?-->|<[^>]*>)')
-  no_tags = tag_re.sub('', msg)
-  return cgi.escape(no_tags)
+  msg = tag_re.sub("", msg)
+  return HTMLParser.HTMLParser().unescape(msg)
 
 def flatten(msg):
   if msg.is_multipart():
@@ -69,12 +72,12 @@ def flatten(msg):
     else:
       payload = payload.decode("utf8", "replace") 
 
-    if msg.get_content_type() == "text/html":
-      return [remove_html(payload)]
-    else:
-      return [payload]
+    # initially checked for "text/html"
+    # but removed check because some e-mails are badly formatted
+    # so just stripping everything of html
+    return [remove_html(payload)]
 
-def simplify_tag(w, pos):
+def simplify_tag((w, pos)):
   if pos == "ADJ":
     return (w, "a")
   elif pos == "VERB":
@@ -96,7 +99,7 @@ def process(f, output):
 
   # nltk.pos_tag is very slow!
   full_message_tagged = nltk.tag._pos_tag(nltk.word_tokenize(full_message), "Universal", tagger)
-  full_message_tagged = map((lambda (w, pos): simplify_tag(w, pos)), full_message_tagged)
+  full_message_tagged = map(simplify_tag, full_message_tagged)
   full_message_lemm = map((lambda (w, pos): WordNetLemmatizer().lemmatize(w, pos)), full_message_tagged) 
 
   output.write(" ".join(full_message_lemm))
