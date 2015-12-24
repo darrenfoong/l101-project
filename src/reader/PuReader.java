@@ -35,7 +35,6 @@ public class PuReader extends CorpusReader {
 			pipeList.add(new TokenSequence2FeatureSequence(dataAlphabet));
 		}
 
-		// binary unigram features! TODO: vary these
 		pipeList.add(new FeatureSequence2FeatureVector(true));
 
 		pipeList.add(new Target2Label());

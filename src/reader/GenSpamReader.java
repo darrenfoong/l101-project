@@ -26,7 +26,7 @@ public class GenSpamReader extends CorpusReader {
 
 		pipeList.add(new Input2CharSequence("UTF-8"));
 
-		Pattern tokenPattern = Pattern.compile("[\\p{L}\\p{N}']+");
+		Pattern tokenPattern = Pattern.compile("[\\p{L}'-]+|[\\p{P}]+");
 		pipeList.add(new CharSequence2TokenSequence(tokenPattern));
 		pipeList.add(new TokenSequenceLowercase());
 		pipeList.add(new TokenSequenceRemoveStopwords(new File("../data/bnc/top100"), "UTF-8", false, false, false));
@@ -40,7 +40,6 @@ public class GenSpamReader extends CorpusReader {
 			pipeList.add(new TokenSequence2FeatureSequence(dataAlphabet));
 		}
 
-		// binary unigram features! TODO: vary these
 		pipeList.add(new FeatureSequence2FeatureVector(true));
 
 		pipeList.add(new Target2Label());
