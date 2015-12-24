@@ -17,6 +17,7 @@ public class NaiveBayesClassifier {
 	private static final int NFOLDS = 10;
 	private static final int CUTOFF = 50;
 	private static final double LAMBDA = 1;
+	private static final int[] NS = {2};
 
 	private static CorpusReader corpusReader = null;
 	private static String directory;
@@ -28,7 +29,7 @@ public class NaiveBayesClassifier {
 
 		switch (corpus) {
 			case "pu1":
-				corpusReader = new PuReader(CUTOFF);
+				corpusReader = new PuReader(CUTOFF, NS);
 				String pu1set = "lemm_stop";
 
 				if ( args.length == 2 ) {
@@ -42,12 +43,12 @@ public class NaiveBayesClassifier {
 				System.out.println("Starting PU1 reader.");
 				break;
 			case "genspam":
-				corpusReader = new GenSpamReader(CUTOFF);
+				corpusReader = new GenSpamReader(CUTOFF, NS);
 				directory = "data/genspam/";
 				System.out.println("Starting GenSpam reader.");
 				break;
 			case "trec07p":
-				corpusReader = new TrecReader(CUTOFF);
+				corpusReader = new TrecReader(CUTOFF, NS);
 				directory = "data/trec07p/";
 				System.out.println("Starting TREC 2007 reader.");
 				break;
@@ -138,6 +139,7 @@ public class NaiveBayesClassifier {
 		corpusReader.readFeatures(trainDirectoriesArray);
 		corpusReader.computeMutualInfo();
 		corpusReader.pruneAlphabet();
+		corpusReader.changeAllAlphabets();
 
 		corpusReader.readData(testDirectoriesArray);
 
@@ -157,6 +159,8 @@ public class NaiveBayesClassifier {
 		double tcr = evaluator.getTotalCostRatio();
 		stats.put("tcr", tcr);
 		System.out.println(" TCR: " + tcr);
+
+		System.out.println(evaluator.getStats());
 
 		System.out.println();
 	}

@@ -13,8 +13,8 @@ import cc.mallet.pipe.TokenSequence2FeatureSequence;
 import cc.mallet.types.Alphabet;
 
 public class PuReader extends CorpusReader {
-	public PuReader(int cutoff) {
-		super(cutoff);
+	public PuReader(int cutoff, int[] ns) {
+		super(cutoff, ns);
 	}
 
 	@Override
@@ -26,7 +26,6 @@ public class PuReader extends CorpusReader {
 		Pattern tokenPattern = Pattern.compile("[0-9]+");
 		pipeList.add(new CharSequence2TokenSequence(tokenPattern));
 
-		int[] ns = {2};
 		pipeList.add(new TokenSequence2TokenSequenceNGrams(ns));
 
 		if ( dataAlphabet == null ) {

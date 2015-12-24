@@ -86,4 +86,15 @@ public class Evaluator {
 	public double getSpamRecall() {
 		return ((double) spamToSpam)/((double) (spamToSpam + hamToSpam));
 	}
+
+	public String getStats() {
+		String output = "";
+		output += "totalSpam: " + totalSpam + "; ";
+		output += "totalHam: " + totalHam + "; ";
+		output += "spamToSpam: " + spamToSpam + "; ";
+		output += "spamToHam: " + spamToHam + "; ";
+		output += "hamToSpam: " + hamToSpam + "; ";
+		output += "hamToHam: " + hamToHam;
+		return output;
+	}
 }

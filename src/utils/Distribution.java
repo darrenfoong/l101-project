@@ -20,12 +20,18 @@ public class Distribution {
 	}
 
 	public double getProb(int i) {
-		// add-one smoothing
-		return ((double) (dist[i]+1))/((double) (sum+dist.length));
+		if ( sum == 0 ) {
+			return 0;
+		} else {
+			return ((double) dist[i])/((double) sum);
+		}
 	}
 
 	public double getLogProb(int i) {
-		// add-one smoothing
-		return Math.log((double) (dist[i]+1)) - Math.log((double) (sum+dist.length));
+		if ( sum == 0 ) {
+			return Double.NEGATIVE_INFINITY;
+		} else {
+			return Math.log((double) dist[i]) - Math.log((double) sum);
+		}
 	}
 }

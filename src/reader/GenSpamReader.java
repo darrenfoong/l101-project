@@ -16,8 +16,8 @@ import cc.mallet.pipe.TokenSequenceRemoveStopwords;
 import cc.mallet.types.Alphabet;
 
 public class GenSpamReader extends CorpusReader {
-	public GenSpamReader(int cutoff) {
-		super(cutoff);
+	public GenSpamReader(int cutoff, int[] ns) {
+		super(cutoff, ns);
 	}
 
 	@Override
@@ -31,7 +31,6 @@ public class GenSpamReader extends CorpusReader {
 		pipeList.add(new TokenSequenceLowercase());
 		pipeList.add(new TokenSequenceRemoveStopwords(new File("../data/bnc/top100"), "UTF-8", false, false, false));
 
-		int[] ns = {2};
 		pipeList.add(new TokenSequence2TokenSequenceNGrams(ns));
 
 		if ( dataAlphabet == null ) {

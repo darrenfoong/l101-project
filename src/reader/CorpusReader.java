@@ -39,8 +39,13 @@ public abstract class CorpusReader {
 
 	protected ArrayList<IntDoublePair> mutualInfo = new ArrayList<IntDoublePair>();
 
-	protected CorpusReader(int cutoff) {
+	protected int[] ns;
+
+	protected CorpusReader(int cutoff, int[] ns) {
 		CUTOFF = cutoff;
+		if ( ns != null ) {
+			this.ns = ns.clone();
+		}
 	}
 
 	public InstanceList getFeatureInstances() {
@@ -112,12 +117,32 @@ public abstract class CorpusReader {
 
 			cDist.add(labelToShort((instance.getTarget().toString())));
 
+			boolean[] denseArray = new boolean[numFeatures];
+
 			for ( int i = 0; i < featureVector.numLocations(); i++ ) {
 				int featureID = featureVector.indexAtLocation(i);
-				int featureValue = (int) featureVector.valueAtLocation(i);
+				// featureValue is definitely 1, because featureVector is sparse
+				// int featureValue = (int) featureVector.valueAtLocation(i);
 
-				xDists[featureID].add(featureValue);
-				xcDists[featureID].add(labelValueToShort(instance.getTarget().toString(), featureValue));
+				// mark non-zero features in denseArray
+				denseArray[featureID] = true;
+
+				// xDists[featureID].add(featureValue);
+				// xcDists[featureID].add(labelValueToShort(instance.getTarget().toString(), featureValue));
+			}
+
+			// since the FeatureVector is sparse, the above (commented) code
+			// neglects the zero entries for the other features
+
+			// need to populate the distributions with the zero entries too
+			// this is done by marking denseArray with the non-zero features
+			// then iterating through denseArray, which is effectively a dense
+			// vector
+
+			for ( int i = 0; i < numFeatures; i++ ) {
+				int featureValue = denseArray[i] ? 1 : 0;
+				xDists[i].add(featureValue);
+				xcDists[i].add(labelValueToShort(instance.getTarget().toString(), featureValue));
 			}
 		}
 
@@ -125,6 +150,10 @@ public abstract class CorpusReader {
 	}
 
 	public void computeMutualInfo() {
+		// conventions:
+		// 0 log 0 = 0
+		// 0 log (0/0) = 0
+
 		System.out.println("Computing mutual information.");
 
 		mutualInfo.clear();
@@ -132,14 +161,29 @@ public abstract class CorpusReader {
 		int numFeatures = featureInstances.getDataAlphabet().size();
 
 		for ( int featureID = 0; featureID < numFeatures; featureID++ ) {
-			double spam0 = xcDists[featureID].getProb(SPAM0)
-						* (xcDists[featureID].getLogProb(SPAM0) - (cDist.getLogProb(SPAM) + xDists[featureID].getLogProb(0)));
-			double spam1 = xcDists[featureID].getProb(SPAM1)
-					* (xcDists[featureID].getLogProb(SPAM1) - (cDist.getLogProb(SPAM) + xDists[featureID].getLogProb(1)));
-			double ham0 = xcDists[featureID].getProb(HAM0)
-					* (xcDists[featureID].getLogProb(HAM0) - (cDist.getLogProb(HAM) + xDists[featureID].getLogProb(0)));
-			double ham1 = xcDists[featureID].getProb(HAM1)
-					* (xcDists[featureID].getLogProb(HAM1) - (cDist.getLogProb(HAM) + xDists[featureID].getLogProb(1)));
+			double spam0 = 0;
+			if ( xcDists[featureID].getProb(SPAM0) != 0 ) {
+				spam0 = xcDists[featureID].getProb(SPAM0) *
+						( xcDists[featureID].getLogProb(SPAM0) - (cDist.getLogProb(SPAM) + xDists[featureID].getLogProb(0)));
+			}
+
+			double spam1 = 0;
+			if ( xcDists[featureID].getProb(SPAM1) != 0 ){
+				spam1 = xcDists[featureID].getProb(SPAM1) *
+						( xcDists[featureID].getLogProb(SPAM1) - (cDist.getLogProb(SPAM) + xDists[featureID].getLogProb(1)));
+			}
+
+			double ham0 = 0;
+			if ( xcDists[featureID].getProb(HAM0) != 0 ) {
+				ham0 = xcDists[featureID].getProb(HAM0) *
+						( xcDists[featureID].getLogProb(HAM0) - (cDist.getLogProb(HAM) + xDists[featureID].getLogProb(0)));
+			}
+
+			double ham1 = 0;
+			if ( xcDists[featureID].getProb(HAM1) != 0 ) {
+				ham1 = xcDists[featureID].getProb(HAM1) *
+						( xcDists[featureID].getLogProb(HAM1) - (cDist.getLogProb(SPAM) + xDists[featureID].getLogProb(1)));
+			}
 
 			double mi = spam0 + spam1 + ham0 + ham1;
 			assert !Double.isNaN(mi);
