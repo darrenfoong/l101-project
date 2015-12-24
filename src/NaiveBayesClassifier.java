@@ -17,7 +17,7 @@ public class NaiveBayesClassifier {
 	private static final int NFOLDS = 10;
 	private static final int CUTOFF = 50;
 	private static final double LAMBDA = 1;
-	private static final int[] NS = {2};
+	private static final int[] NS = null;
 
 	private static CorpusReader corpusReader = null;
 	private static String directory;
