@@ -19,6 +19,10 @@ public class Distribution {
 		sum += n;
 	}
 
+	public int getCount(int i) {
+		return dist[i];
+	}
+
 	public double getProb(int i) {
 		if ( sum == 0 ) {
 			return 0;

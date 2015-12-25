@@ -125,34 +125,27 @@ public abstract class CorpusReader {
 
 			cDist.add(labelToShort(label));
 
-			boolean[] denseArray = new boolean[numFeatures];
+			// boolean[] denseArray = new boolean[numFeatures];
 
 			for ( int i = 0; i < featureVector.numLocations(); i++ ) {
 				int featureID = featureVector.indexAtLocation(i);
-				// featureValue is definitely 1, because featureVector is sparse
-				// int featureValue = (int) featureVector.valueAtLocation(i);
 
-				// mark non-zero features in denseArray
-				denseArray[featureID] = true;
+				xDists[featureID].add(1);
+				xcDists[featureID].add(labelValueToShort(instance.getTarget().toString(), 1));
 
-				// xDists[featureID].add(featureValue);
-				// xcDists[featureID].add(labelValueToShort(instance.getTarget().toString(), featureValue));
+				// denseArray[featureID] = true;
 			}
 
-			// since the FeatureVector is sparse, the above (commented) code
-			// neglects the zero entries for the other features
-
-			// need to populate the distributions with the zero entries too
-			// this is done by marking denseArray with the non-zero features
-			// then iterating through denseArray, which is effectively a dense
-			// vector
-
+			/*
 			for ( int i = 0; i < numFeatures; i++ ) {
 				int featureValue = denseArray[i] ? 1 : 0;
 				xDists[i].add(featureValue);
 				xcDists[i].add(labelValueToShort(label, featureValue));
 			}
+			*/
 		}
+
+		balanceDistributions();
 
 		System.out.println("Features read. Distributions created.");
 	}
@@ -290,6 +283,26 @@ public abstract class CorpusReader {
 		featureInstances = newInstances;
 
 		System.out.println("All alphabets changed.");
+	}
+
+	public void balanceDistributions() {
+		int numSpam = cDist.getCount(SPAM);
+		int numHam = cDist.getCount(HAM);
+		int numInstances = numSpam + numHam;
+
+		System.out.println("numInstances: " + numInstances);
+		System.out.println("featureInstances size: " + featureInstances.size());
+		assert numInstances == featureInstances.size();
+
+		int numFeatures = featureInstances.getDataAlphabet().size();
+
+		for ( int i = 0; i < numFeatures; i++ ) {
+			// xDist
+			xDists[i].add(0, numInstances - xDists[i].getCount(1));
+			// xcDist
+			xcDists[i].add(SPAM0, numSpam - xcDists[i].getCount(SPAM1));
+			xcDists[i].add(HAM0, numHam - xcDists[i].getCount(HAM1));
+		}
 	}
 
 	private String featureVectorToPrettyString(FeatureVector featureVector) {
