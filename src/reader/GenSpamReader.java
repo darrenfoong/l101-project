@@ -29,7 +29,7 @@ public class GenSpamReader extends CorpusReader {
 		Pattern tokenPattern = Pattern.compile("[\\p{L}'-]+|[\\p{P}]+");
 		pipeList.add(new CharSequence2TokenSequence(tokenPattern));
 		pipeList.add(new TokenSequenceLowercase());
-		pipeList.add(new TokenSequenceRemoveStopwords(new File("../data/bnc/top100"), "UTF-8", false, false, false));
+		pipeList.add(new TokenSequenceRemoveStopwords(new File("data/bnc/top100"), "UTF-8", false, false, false));
 
 		pipeList.add(new TokenSequence2TokenSequenceNGrams(ns));
 
