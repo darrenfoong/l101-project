@@ -20,6 +20,21 @@ public class Statistics {
 		}
 	}
 
+	public double getSum(String label) {
+		if ( statsMap.containsKey(label) ) {
+			double sum = 0.0;
+			ArrayList<Double> valueList = statsMap.get(label);
+
+			for ( double value : valueList ) {
+				sum += value;
+			}
+
+			return sum;
+		} else {
+			throw new IllegalArgumentException();
+		}
+	}
+
 	public double getAverage(String label) {
 		if ( statsMap.containsKey(label) ) {
 			double sum = 0.0;

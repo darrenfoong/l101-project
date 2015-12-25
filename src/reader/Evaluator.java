@@ -40,6 +40,16 @@ public class Evaluator {
 		}
 	}
 
+	public Evaluator(double lambda, int totalSpam, int totalHam, int spamToSpam, int spamToHam, int hamToSpam, int hamToHam) {
+		this.lambda = lambda;
+		this.totalSpam = totalSpam;
+		this.totalHam = totalHam;
+		this.spamToSpam = spamToSpam;
+		this.spamToHam = spamToHam;
+		this.hamToSpam = hamToSpam;
+		this.hamToHam = hamToHam;
+	}
+
 	public String getBestLabel(Labeling labeling) {
 		double spamProb = labeling.valueAtLocation(0);
 		double hamProb = labeling.valueAtLocation(1);
@@ -49,6 +59,30 @@ public class Evaluator {
 		} else {
 			return "ham";
 		}
+	}
+
+	public int getTotalSpam() {
+		return totalSpam;
+	}
+
+	public int getTotalHam() {
+		return totalHam;
+	}
+
+	public int getSpamToSpam() {
+		return spamToSpam;
+	}
+
+	public int getSpamToHam() {
+		return spamToHam;
+	}
+
+	public int getHamToSpam() {
+		return hamToSpam;
+	}
+
+	public int getHamToHam() {
+		return hamToHam;
 	}
 
 	public double getAccuracy() {
@@ -87,7 +121,7 @@ public class Evaluator {
 		return ((double) spamToSpam)/((double) (spamToSpam + hamToSpam));
 	}
 
-	public String getStats() {
+	public String getRawStats() {
 		String output = "";
 		output += "totalSpam: " + totalSpam + "; ";
 		output += "totalHam: " + totalHam + "; ";
@@ -95,6 +129,15 @@ public class Evaluator {
 		output += "spamToHam: " + spamToHam + "; ";
 		output += "hamToSpam: " + hamToSpam + "; ";
 		output += "hamToHam: " + hamToHam;
+		return output;
+	}
+
+	public String getStats() {
+		String output = "";
+		output += "sp: " + getSpamPrecision() + "; ";
+		output += "sr: " + getSpamRecall() + "; ";
+		output += "wacc: " + getWeightedAccuracy() + "; ";
+		output += "tcr: " + getTotalCostRatio();
 		return output;
 	}
 }

@@ -85,7 +85,19 @@ public class NaiveBayesClassifier {
 				runNaiveBayes(trainDirectoriesArray, new File[] {testDirectory});
 			}
 
-			System.out.println("Average TCR: " + stats.getAverage("tcr"));
+			Evaluator evaluator = new Evaluator(LAMBDA,
+									(int) stats.getSum("totalSpam"),
+									(int) stats.getSum("totalHam"),
+									(int) stats.getSum("spamToSpam"),
+									(int) stats.getSum("spamToHam"),
+									(int) stats.getSum("hamToSpam"),
+									(int) stats.getSum("hamToHam"));
+
+			System.out.println(evaluator.getRawStats());
+			System.out.println(evaluator.getStats());
+
+			System.out.println("Macroaverage TCR: " + stats.getAverage("tcr"));
+			System.out.println("Microaverage TCR: " + evaluator.getTotalCostRatio());
 
 			return;
 		}
@@ -156,10 +168,16 @@ public class NaiveBayesClassifier {
 		Evaluator evaluator = new Evaluator(LAMBDA, results);
 		System.out.println("Evaluator initialised with lambda = " + LAMBDA);
 
-		double tcr = evaluator.getTotalCostRatio();
-		stats.put("tcr", tcr);
-		System.out.println(" TCR: " + tcr);
+		stats.put("tcr", evaluator.getTotalCostRatio());
 
+		stats.put("totalSpam", evaluator.getTotalSpam());
+		stats.put("totalHam", evaluator.getTotalHam());
+		stats.put("spamToSpam", evaluator.getSpamToSpam());
+		stats.put("spamToHam", evaluator.getSpamToHam());
+		stats.put("hamToSpam", evaluator.getHamToSpam());
+		stats.put("hamToHam", evaluator.getHamToHam());
+
+		System.out.println(evaluator.getRawStats());
 		System.out.println(evaluator.getStats());
 
 		System.out.println();
