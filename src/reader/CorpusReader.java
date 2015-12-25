@@ -1,7 +1,11 @@
 package reader;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -100,6 +104,8 @@ public abstract class CorpusReader {
 		System.out.println(" Number of feature instances: " + featureInstances.size());
 		System.out.println(" Number of features: " + numFeatures);
 
+		// printFeatures(featureInstances.getDataAlphabet());
+
 		cDist = new Distribution(2);
 		xDists = new Distribution[numFeatures];
 		xcDists = new Distribution[numFeatures];
@@ -115,7 +121,9 @@ public abstract class CorpusReader {
 			Instance instance = iter.next();
 			FeatureVector featureVector = (FeatureVector) instance.getData();
 
-			cDist.add(labelToShort((instance.getTarget().toString())));
+			String label = instance.getTarget().toString();
+
+			cDist.add(labelToShort(label));
 
 			boolean[] denseArray = new boolean[numFeatures];
 
@@ -142,7 +150,7 @@ public abstract class CorpusReader {
 			for ( int i = 0; i < numFeatures; i++ ) {
 				int featureValue = denseArray[i] ? 1 : 0;
 				xDists[i].add(featureValue);
-				xcDists[i].add(labelValueToShort(instance.getTarget().toString(), featureValue));
+				xcDists[i].add(labelValueToShort(label, featureValue));
 			}
 		}
 
@@ -306,6 +314,25 @@ public abstract class CorpusReader {
 		}
 
 		return output;
+	}
+
+	public void printFeatures(Alphabet alphabet) {
+		PrintWriter output = null;
+
+		try {
+			output = new PrintWriter(new BufferedWriter(new FileWriter("data/features.out")));
+			int numFeatures = alphabet.size();
+			for ( int i = 0; i < numFeatures; i++ ) {
+				String featureName = (String) alphabet.lookupObject(i);
+				output.println(featureName);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			if ( output != null ) {
+				output.close();
+			}
+		}
 	}
 
 	private short labelToShort(String label) {
