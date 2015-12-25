@@ -26,7 +26,7 @@ public class TrecReader extends CorpusReader {
 
 		pipeList.add(new Input2CharSequence("UTF-8"));
 
-		Pattern tokenPattern = Pattern.compile("[\\p{L}'-]+|[\\p{P}]+");
+		Pattern tokenPattern = Pattern.compile("[\\p{Alpha}'-]+|[\\p{Punct}]+");
 		pipeList.add(new CharSequence2TokenSequence(tokenPattern));
 		pipeList.add(new TokenSequenceLowercase());
 		pipeList.add(new TokenSequenceRemoveStopwords(new File("data/bnc/top100"), "UTF-8", false, false, false));
