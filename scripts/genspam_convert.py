@@ -19,6 +19,8 @@ tagger = PerceptronTagger()
 
 TMP_EXT = ".tmp"
 
+VERSION = sys.argv[1]
+
 # input data
 
 data = {
@@ -33,11 +35,22 @@ counts = {
   "test_spam": 797,
   "test_ham": 754 }
 
-output_folders = {
-  "train_spam": "../data/genspam/train/spam/",
-  "train_ham": "../data/genspam/train/ham/",
-  "test_spam": "../data/genspam/test/spam/",
-  "test_ham": "../data/genspam/test/ham/" }
+output_folders_bare = {
+  "train_spam": "../data/genspam/bare/train/spam/",
+  "train_ham": "../data/genspam/bare/train/ham/",
+  "test_spam": "../data/genspam/bare/test/spam/",
+  "test_ham": "../data/genspam/bare/test/ham/" }
+
+output_folders_lemm = {
+  "train_spam": "../data/genspam/lemm/train/spam/",
+  "train_ham": "../data/genspam/lemm/train/ham/",
+  "test_spam": "../data/genspam/lemm/test/spam/",
+  "test_ham": "../data/genspam/lemm/test/ham/" }
+
+if VERSION == "bare":
+  output_folders = output_folders_bare
+elif VERSION == "lemm":
+  output_folders = output_folders_lemm
 
 # substitutions
 
@@ -123,18 +136,19 @@ for fkey in data.keys():
     else:
       message_body_text = ""
 
-    # lemmatise
-
     full_message = subject_text + " " + message_body_text 
     full_message = full_message.replace("GENSPAM_AMPERSAND", "&")
     full_message = HTMLParser.HTMLParser().unescape(full_message)
 
-    # nltk.pos_tag is very slow!
-    full_message_tagged = nltk.tag._pos_tag(nltk.word_tokenize(full_message), "Universal", tagger)
-    full_message_tagged = map(simplify_tag, full_message_tagged)
-    full_message_lemm = map((lambda (w, pos): WordNetLemmatizer().lemmatize(w, pos)), full_message_tagged)
+    if VERSION == "bare":
+      full_message_output = nltk.word_tokenize(full_message)
+    elif VERSION == "lemm":
+      # nltk.pos_tag is very slow!
+      full_message_tagged = nltk.tag._pos_tag(nltk.word_tokenize(full_message), "Universal", tagger)
+      full_message_tagged = map(simplify_tag, full_message_tagged)
+      full_message_output = map((lambda (w, pos): WordNetLemmatizer().lemmatize(w, pos)), full_message_tagged)
 
-    output.write(" ".join(full_message_lemm))
+    output.write(" ".join(full_message_output))
     output.close()
 
   print "Generated individual files for " + fkey + " in " + output_folders[fkey] + "."

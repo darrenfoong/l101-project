@@ -16,6 +16,10 @@ sys.setdefaultencoding("utf8")
 # for speed
 tagger = PerceptronTagger()
 
+# constants
+
+VERSION = sys.argv[1]
+
 # read labels
 
 labels_06 = {}
@@ -93,22 +97,23 @@ def process(f, output):
   contents = flatten(msg)
   new_lines = [subject_line+"\n"] + contents 
 
-  # lemmatise
-
   full_message = "".join(new_lines)
 
-  # nltk.pos_tag is very slow!
-  full_message_tagged = nltk.tag._pos_tag(nltk.word_tokenize(full_message), "Universal", tagger)
-  full_message_tagged = map(simplify_tag, full_message_tagged)
-  full_message_lemm = map((lambda (w, pos): WordNetLemmatizer().lemmatize(w, pos)), full_message_tagged) 
+  if VERSION == "bare":
+    full_message_output = nltk.word_tokenize(full_message)
+  elif VERSION == "lemm":
+    # nltk.pos_tag is very slow!
+    full_message_tagged = nltk.tag._pos_tag(nltk.word_tokenize(full_message), "Universal", tagger)
+    full_message_tagged = map(simplify_tag, full_message_tagged)
+    full_message_output = map((lambda (w, pos): WordNetLemmatizer().lemmatize(w, pos)), full_message_tagged) 
 
-  output.write(" ".join(full_message_lemm))
+  output.write(" ".join(full_message_output))
 
 # 2007: starts from 1
 for i in range(1,label_counter_07+1):
   print "Processing 2007 message #" + str(i)
   f = open("../data/trec07p_org/data/inmail." + str(i))
-  output = open("../data/trec07p/test/" + labels_07[i] + "/" + str(i) + ".txt", "w") 
+  output = open("../data/trec07p/" + VERSION + "/test/" + labels_07[i] + "/" + str(i) + ".txt", "w") 
 
   process(f, output)
   output.close()
@@ -120,7 +125,7 @@ for i in range(0, label_counter_06):
   i_folder = i//300 # floor division
   i_file = i % 300
   f = open("../data/trec06p_org/data/" + str("{:03d}".format(i_folder)) + "/" + str("{:03d}".format(i_file)))
-  output = open("../data/trec07p/train/" + labels_06[i] + "/" + str(i) + ".txt", "w") 
+  output = open("../data/trec07p/" + VERSION + "/train/" + labels_06[i] + "/" + str(i) + ".txt", "w") 
 
   process(f, output)
   output.close()
