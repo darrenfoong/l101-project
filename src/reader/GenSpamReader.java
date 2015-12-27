@@ -16,8 +16,11 @@ import cc.mallet.pipe.TokenSequenceRemoveStopwords;
 import cc.mallet.types.Alphabet;
 
 public class GenSpamReader extends CorpusReader {
-	public GenSpamReader(int cutoff, int[] ns) {
+	boolean stop;
+
+	public GenSpamReader(int cutoff, int[] ns, boolean stop) {
 		super(cutoff, ns);
+		this.stop = stop;
 	}
 
 	@Override
@@ -29,7 +32,10 @@ public class GenSpamReader extends CorpusReader {
 		Pattern tokenPattern = Pattern.compile("[\\p{Alpha}'-]+|[\\p{Punct}]+");
 		pipeList.add(new CharSequence2TokenSequence(tokenPattern));
 		pipeList.add(new TokenSequenceLowercase());
-		pipeList.add(new TokenSequenceRemoveStopwords(new File("data/bnc/top100"), "UTF-8", false, false, false));
+
+		if ( stop ) {
+			pipeList.add(new TokenSequenceRemoveStopwords(new File("data/bnc/top100"), "UTF-8", false, false, false));
+		}
 
 		pipeList.add(new TokenSequence2TokenSequenceNGrams(ns));
 

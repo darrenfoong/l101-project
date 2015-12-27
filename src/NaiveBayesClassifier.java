@@ -18,6 +18,7 @@ public class NaiveBayesClassifier {
 	private static final int CUTOFF = 50;
 	private static final double LAMBDA = 1;
 	private static final int[] NS = null;
+	private static final boolean STOP = false;
 
 	private static CorpusReader corpusReader = null;
 	private static String directory;
@@ -26,29 +27,65 @@ public class NaiveBayesClassifier {
 
 	public static void main(String[] args) {
 		String corpus = args[0];
+		String subset = "lemm_stop";
+		boolean stop = false;
 
 		switch (corpus) {
 			case "pu1":
-				corpusReader = new PuReader(CUTOFF, NS);
-				String pu1set = "lemm_stop";
-
 				if ( args.length == 2 ) {
-					pu1set = args[1]; // bare, lemm, lemm_stop, stop
-					System.out.println("Subset " + pu1set + " used.");
+					subset = args[1]; // bare, lemm, lemm_stop, stop
+					System.out.println("Subset " + subset + " used.");
 				} else {
-					System.out.println("No subset of PU1 selected: subset " + pu1set + " used.");
+					System.out.println("No subset of PU1 selected: subset " + subset + " used.");
 				}
 
-				directory = "data/pu1/" + pu1set + "/";
+				corpusReader = new PuReader(CUTOFF, NS);
+				directory = "data/pu1/" + subset + "/";
 				System.out.println("Starting PU1 reader.");
 				break;
 			case "genspam":
-				corpusReader = new GenSpamReader(CUTOFF, NS);
-				directory = "data/genspam/";
+				if ( args.length == 2 ) {
+					subset = args[1]; // bare, lemm, lemm_stop, stop
+
+					if ( subset == "lemm_stop" ) {
+						subset = "lemm";
+						stop = true;
+					}
+
+					if ( subset == "stop" ) {
+						subset = "bare";
+						stop = true;
+					}
+
+					System.out.println("Subset " + subset + " used.");
+				} else {
+					System.out.println("No subset of GenSpam selected: subset " + subset + " used.");
+				}
+
+				corpusReader = new GenSpamReader(CUTOFF, NS, stop);
+				directory = "data/genspam/" + subset + "/";
 				System.out.println("Starting GenSpam reader.");
 				break;
 			case "trec07p":
-				corpusReader = new TrecReader(CUTOFF, NS);
+				if ( args.length == 2 ) {
+					subset = args[1]; // bare, lemm, lemm_stop, stop
+
+					if ( subset == "lemm_stop" ) {
+						subset = "lemm";
+						stop = true;
+					}
+
+					if ( subset == "stop" ) {
+						subset = "bare";
+						stop = true;
+					}
+
+					System.out.println("Subset " + subset + " used.");
+				} else {
+					System.out.println("No subset of TREC 2007 selected: subset " + subset + " used.");
+				}
+
+				corpusReader = new TrecReader(CUTOFF, NS, stop);
 				directory = "data/trec07p/";
 				System.out.println("Starting TREC 2007 reader.");
 				break;
