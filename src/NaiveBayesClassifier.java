@@ -12,13 +12,14 @@ import cc.mallet.classify.NaiveBayes;
 import cc.mallet.classify.NaiveBayesTrainer;
 import cc.mallet.types.CrossValidationIterator;
 import cc.mallet.types.InstanceList;
+import cc.mallet.types.Multinomial;
 
 public class NaiveBayesClassifier {
 	private static final int NFOLDS = 10;
 	private static final int CUTOFF = 50;
 	private static final double LAMBDA = 1;
 	private static final int[] NS = null;
-	private static final boolean STOP = false;
+	private static final boolean SMOOTHING = true;
 
 	private static CorpusReader corpusReader = null;
 	private static String directory;
@@ -156,6 +157,12 @@ public class NaiveBayesClassifier {
 		System.out.println("Naive Bayes classifer initialised.");
 
 		NaiveBayesTrainer nbTrainer = new NaiveBayesTrainer();
+
+		if ( !SMOOTHING ) {
+			nbTrainer.setFeatureMultinomialEstimator(new Multinomial.MLEstimator());
+			nbTrainer.setPriorMultinomialEstimator(new Multinomial.MLEstimator());
+		}
+
 		InstanceList instances = corpusReader.getFeatureInstances();
 
 		System.out.println("Cross-validation on " + NFOLDS + " folds.");
@@ -195,6 +202,12 @@ public class NaiveBayesClassifier {
 		System.out.println("Naive Bayes classifer initialised.");
 
 		NaiveBayesTrainer nbTrainer = new NaiveBayesTrainer();
+
+		if ( !SMOOTHING ) {
+			nbTrainer.setFeatureMultinomialEstimator(new Multinomial.MLEstimator());
+			nbTrainer.setPriorMultinomialEstimator(new Multinomial.MLEstimator());
+		}
+
 		InstanceList featureInstances = corpusReader.getFeatureInstances();
 		InstanceList dataInstances = corpusReader.getDataInstances();
 
