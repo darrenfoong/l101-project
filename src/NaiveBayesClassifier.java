@@ -15,7 +15,7 @@ import cc.mallet.types.Multinomial;
 
 public class NaiveBayesClassifier {
 	private static final int[] NS = null;
-	private static final boolean SMOOTHING = false;
+	private static final boolean SMOOTHING = true;
 
 	private static CorpusReader corpusReader = null;
 	private static String directory;
