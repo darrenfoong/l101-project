@@ -2,6 +2,8 @@ package reader;
 
 import java.util.ArrayList;
 
+import utils.DoubleDoublePair;
+
 import cc.mallet.classify.Classification;
 import cc.mallet.types.Labeling;
 
@@ -15,8 +17,32 @@ public class Evaluator {
 	private int hamToSpam;
 	private int hamToHam;
 
+	private ArrayList<Classification> results;
+
 	public Evaluator(double lambda, ArrayList<Classification> results) {
 		this.lambda = lambda;
+		this.results = results;
+
+		processResults();
+	}
+
+	public Evaluator(double lambda, int totalSpam, int totalHam, int spamToSpam, int spamToHam, int hamToSpam, int hamToHam) {
+		this.lambda = lambda;
+		this.totalSpam = totalSpam;
+		this.totalHam = totalHam;
+		this.spamToSpam = spamToSpam;
+		this.spamToHam = spamToHam;
+		this.hamToSpam = hamToSpam;
+		this.hamToHam = hamToHam;
+	}
+
+	private void processResults() {
+		totalSpam = 0;
+		totalHam = 0;
+		spamToSpam = 0;
+		spamToHam = 0;
+		hamToSpam = 0;
+		hamToHam = 0;
 
 		for ( Classification result : results ) {
 			String targetLabel = result.getInstance().getTarget().toString();
@@ -40,17 +66,7 @@ public class Evaluator {
 		}
 	}
 
-	public Evaluator(double lambda, int totalSpam, int totalHam, int spamToSpam, int spamToHam, int hamToSpam, int hamToHam) {
-		this.lambda = lambda;
-		this.totalSpam = totalSpam;
-		this.totalHam = totalHam;
-		this.spamToSpam = spamToSpam;
-		this.spamToHam = spamToHam;
-		this.hamToSpam = hamToSpam;
-		this.hamToHam = hamToHam;
-	}
-
-	public String getBestLabel(Labeling labeling) {
+	private String getBestLabel(Labeling labeling) {
 		double spamProb = labeling.valueAtLocation(0);
 		double hamProb = labeling.valueAtLocation(1);
 
@@ -114,11 +130,23 @@ public class Evaluator {
 	}
 
 	public double getSpamPrecision() {
-		return ((double) spamToSpam)/((double) (spamToSpam + spamToHam));
+		return ((double) spamToSpam)/((double) (spamToSpam + hamToSpam));
 	}
 
 	public double getSpamRecall() {
-		return ((double) spamToSpam)/((double) (spamToSpam + hamToSpam));
+		return ((double) spamToSpam)/((double) (spamToSpam + spamToHam));
+	}
+
+	public double getHamPrecision() {
+		return ((double) hamToHam)/((double) (hamToHam + spamToHam));
+	}
+
+	public double getHamRecall() {
+		return ((double) hamToHam)/((double) (hamToHam + hamToSpam));
+	}
+
+	public double getWeightedSpamPrecision() {
+		return ((double) spamToSpam)/((double) (spamToSpam + lambda*hamToSpam));
 	}
 
 	public String getRawStats() {
@@ -139,5 +167,22 @@ public class Evaluator {
 		output += "wacc: " + getWeightedAccuracy() + "; ";
 		output += "tcr: " + getTotalCostRatio();
 		return output;
+	}
+
+	public ArrayList<DoubleDoublePair> getRoc(ArrayList<Double> lambdas) {
+		ArrayList<DoubleDoublePair> roc = new ArrayList<DoubleDoublePair>();
+
+		double oldLambda = this.lambda;
+
+		for ( double lambda : lambdas ) {
+			this.lambda = lambda;
+			processResults();
+			roc.add(new DoubleDoublePair(getSpamRecall(), getHamRecall()));
+		}
+
+		this.lambda = oldLambda;
+		processResults();
+
+		return roc;
 	}
 }
