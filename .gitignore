@@ -9,3 +9,4 @@ src/.gitignore
 compile
 Makefile
 run
+runall
