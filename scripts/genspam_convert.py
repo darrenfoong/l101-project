@@ -130,7 +130,9 @@ for fkey in data.keys():
     if message_body:
       message_body_inner = message_body[0].getElementsByTagName("TEXT_NORMAL")
       if message_body_inner:
-        message_body_text = message_body_inner[0].firstChild.nodeValue
+        message_body_text = ""
+        for i in range(0,len(message_body_inner)):
+          message_body_text += message_body_inner[i].firstChild.nodeValue + " "
       else:
         message_body_text = ""
     else:
