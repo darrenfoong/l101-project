@@ -161,11 +161,11 @@ public class Evaluator {
 	}
 
 	public String getStats() {
-		String output = "";
-		output += "sp: " + getSpamPrecision() + "; ";
-		output += "sr: " + getSpamRecall() + "; ";
-		output += "wacc: " + getWeightedAccuracy() + "; ";
-		output += "tcr: " + getTotalCostRatio();
+		String output = "Micro stats: ";
+		output += getSpamPrecision() + " ";
+		output += getSpamRecall() + " ";
+		output += getWeightedAccuracy() + " ";
+		output += getTotalCostRatio();
 		return output;
 	}
 

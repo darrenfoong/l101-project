@@ -122,6 +122,8 @@ public class NaiveBayesClassifier {
 			System.out.println("Macroaverage weighted accuracy: " + stats.getAverage("wacc"));
 			System.out.println("Macroaverage TCR: " + stats.getAverage("tcr"));
 
+			System.out.println("Macro stats: " + stats.getAverage("sp") + " " + stats.getAverage("sr") + " " + stats.getAverage("wacc") + " " + stats.getAverage("tcr"));
+
 			return;
 		}
 
