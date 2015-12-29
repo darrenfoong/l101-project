@@ -137,6 +137,10 @@ public class Evaluator {
 		return ((double) spamToSpam)/((double) (spamToSpam + spamToHam));
 	}
 
+	public double getSpamF1() {
+		return (2*getSpamPrecision()*getSpamRecall())/(getSpamPrecision()+getSpamRecall());
+	}
+
 	public double getHamPrecision() {
 		return ((double) hamToHam)/((double) (hamToHam + spamToHam));
 	}
@@ -147,6 +151,10 @@ public class Evaluator {
 
 	public double getWeightedSpamPrecision() {
 		return ((double) spamToSpam)/((double) (spamToSpam + lambda*hamToSpam));
+	}
+
+	public double getWeightedSpamF1() {
+		return (2*getWeightedSpamPrecision()*getSpamRecall())/(getWeightedSpamPrecision()+getSpamRecall());
 	}
 
 	public String getRawStats() {
@@ -164,6 +172,8 @@ public class Evaluator {
 		String output = "Micro stats: ";
 		output += getSpamPrecision() + " ";
 		output += getSpamRecall() + " ";
+		output += getSpamF1() + " ";
+		output += getWeightedSpamF1() + " ";
 		output += getWeightedAccuracy() + " ";
 		output += getTotalCostRatio();
 		return output;

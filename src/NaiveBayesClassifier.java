@@ -116,7 +116,13 @@ public class NaiveBayesClassifier {
 
 			System.out.println(evaluator.getRawStats());
 			System.out.println(evaluator.getStats());
-			System.out.println("Macro stats: " + stats.getAverage("sp") + " " + stats.getAverage("sr") + " " + stats.getAverage("wacc") + " " + stats.getAverage("tcr"));
+			System.out.println("Macro stats: " +
+						stats.getAverage("sp") + " " +
+						stats.getAverage("sr") + " " +
+						stats.getAverage("sf1") + " " +
+						stats.getAverage("wsf1") + " " +
+						stats.getAverage("wacc") + " " +
+						stats.getAverage("tcr"));
 
 			return;
 		}
@@ -165,10 +171,12 @@ public class NaiveBayesClassifier {
 		Evaluator evaluator = new Evaluator(lambda, results);
 		System.out.println("Evaluator initialised with lambda = " + lambda);
 
-		stats.put("tcr", evaluator.getTotalCostRatio());
 		stats.put("sp", evaluator.getSpamPrecision());
 		stats.put("sr", evaluator.getSpamRecall());
+		stats.put("sf1", evaluator.getSpamF1());
+		stats.put("wsf1", evaluator.getWeightedSpamF1());
 		stats.put("wacc", evaluator.getWeightedAccuracy());
+		stats.put("tcr", evaluator.getTotalCostRatio());
 
 		stats.put("totalSpam", evaluator.getTotalSpam());
 		stats.put("totalHam", evaluator.getTotalHam());
