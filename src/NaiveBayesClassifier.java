@@ -125,7 +125,7 @@ public class NaiveBayesClassifier {
 						stats.getAverage("sf1") + " " +
 						stats.getAverage("wsf1") + " " +
 						stats.getAverage("wacc") + " " +
-						stats.getAverage("tcr"));
+						evaluator.getWeightedErrorBaseline()/stats.getAverage("werr"));
 
 			return;
 		}
@@ -179,7 +179,7 @@ public class NaiveBayesClassifier {
 		stats.put("sf1", evaluator.getSpamF1());
 		stats.put("wsf1", evaluator.getWeightedSpamF1());
 		stats.put("wacc", evaluator.getWeightedAccuracy());
-		stats.put("tcr", evaluator.getTotalCostRatio());
+		stats.put("werr", evaluator.getWeightedError());
 
 		stats.put("totalSpam", evaluator.getTotalSpam());
 		stats.put("totalHam", evaluator.getTotalHam());
