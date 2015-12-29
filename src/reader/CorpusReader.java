@@ -104,8 +104,6 @@ public abstract class CorpusReader {
 		System.out.println(" Number of feature instances: " + featureInstances.size());
 		System.out.println(" Number of features: " + numFeatures);
 
-		// printFeatures(featureInstances.getDataAlphabet());
-
 		cDist = new Distribution(2);
 		xDists = new Distribution[numFeatures];
 		xcDists = new Distribution[numFeatures];
@@ -125,24 +123,12 @@ public abstract class CorpusReader {
 
 			cDist.add(labelToShort(label));
 
-			// boolean[] denseArray = new boolean[numFeatures];
-
 			for ( int i = 0; i < featureVector.numLocations(); i++ ) {
 				int featureID = featureVector.indexAtLocation(i);
 
 				xDists[featureID].add(1);
 				xcDists[featureID].add(labelValueToShort(instance.getTarget().toString(), 1));
-
-				// denseArray[featureID] = true;
 			}
-
-			/*
-			for ( int i = 0; i < numFeatures; i++ ) {
-				int featureValue = denseArray[i] ? 1 : 0;
-				xDists[i].add(featureValue);
-				xcDists[i].add(labelValueToShort(label, featureValue));
-			}
-			*/
 		}
 
 		balanceDistributions();
@@ -236,7 +222,6 @@ public abstract class CorpusReader {
 			int featureValue = (int) featureVector.valueAtLocation(i);
 
 			int oldIndex = (int) featureVector.indexAtLocation(i);
-			// TODO: danger of error code -1
 			String value = (String) featureVector.getAlphabet().lookupObject(oldIndex);
 			int newIndex = newAlphabet.lookupIndex(value);
 
@@ -313,9 +298,7 @@ public abstract class CorpusReader {
 		int numFeatures = featureInstances.getDataAlphabet().size();
 
 		for ( int i = 0; i < numFeatures; i++ ) {
-			// xDist
 			xDists[i].add(0, numInstances - xDists[i].getCount(1));
-			// xcDist
 			xcDists[i].add(SPAM0, numSpam - xcDists[i].getCount(SPAM1));
 			xcDists[i].add(HAM0, numHam - xcDists[i].getCount(HAM1));
 		}
