@@ -2,11 +2,11 @@ import java.io.File;
 import java.util.ArrayList;
 
 import reader.CorpusReader;
-import reader.Evaluator;
 import reader.GenSpamReader;
 import reader.NaiveBayesMBTrainer;
 import reader.PuReader;
 import reader.TrecReader;
+import utils.Evaluator;
 import utils.Statistics;
 import cc.mallet.classify.Classification;
 import cc.mallet.classify.NaiveBayes;

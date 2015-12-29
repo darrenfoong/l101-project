@@ -1,8 +1,6 @@
-package reader;
+package utils;
 
 import java.util.ArrayList;
-
-import utils.DoubleDoublePair;
 
 import cc.mallet.classify.Classification;
 import cc.mallet.types.Labeling;
