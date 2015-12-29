@@ -267,6 +267,8 @@ public abstract class CorpusReader {
 	public void changeAllAlphabets() {
 		System.out.println("Changing all alphabets.");
 
+		Alphabet oldAlphabet = featureInstances.getDataAlphabet();
+
 		InstanceList newInstances = new InstanceList(newAlphabet, featureInstances.getTargetAlphabet());
 
 		Iterator<Instance> iter = featureInstances.iterator();
@@ -281,6 +283,20 @@ public abstract class CorpusReader {
 		}
 
 		featureInstances = newInstances;
+
+		Distribution[] xDistsNew = new Distribution[newAlphabet.size()];
+		Distribution[] xcDistsNew = new Distribution[newAlphabet.size()];
+
+		for ( int i = 0; i < newAlphabet.size(); i++ ) {
+			int oldAlphabetIndex = oldAlphabet.lookupIndex(newAlphabet.lookupObject(i));
+			xDistsNew[i] = xDists[oldAlphabetIndex];
+			xcDistsNew[i] = xcDists[oldAlphabetIndex];
+		}
+
+		xDists = xDistsNew;
+		xcDists = xcDistsNew;
+
+		System.out.println("Distributions remapped.");
 
 		System.out.println("All alphabets changed.");
 	}

@@ -38,4 +38,12 @@ public class Distribution {
 			return Math.log((double) dist[i]) - Math.log((double) sum);
 		}
 	}
+
+	public double getLogProbS(int i, boolean smoothing) {
+		if ( smoothing ) {
+			return Math.log((double) (dist[i]+1)) - Math.log((double) (sum+dist.length));
+		} else {
+			return getLogProb(i);
+		}
+	}
 }

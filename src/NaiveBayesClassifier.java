@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import reader.CorpusReader;
 import reader.Evaluator;
 import reader.GenSpamReader;
+import reader.NaiveBayesMBTrainer;
 import reader.PuReader;
 import reader.TrecReader;
 import utils.Statistics;
@@ -15,7 +16,8 @@ import cc.mallet.types.Multinomial;
 
 public class NaiveBayesClassifier {
 	private static final int[] NS = null;
-	private static final boolean SMOOTHING = true;
+	private static final boolean MULTINOMIAL = false;
+	private static final boolean SMOOTHING = false;
 
 	private static CorpusReader corpusReader = null;
 	private static String directory;
@@ -114,14 +116,6 @@ public class NaiveBayesClassifier {
 
 			System.out.println(evaluator.getRawStats());
 			System.out.println(evaluator.getStats());
-
-			System.out.println();
-
-			System.out.println("Macroaverage spam precision: " + stats.getAverage("sp"));
-			System.out.println("Macroaverage spam recall: " + stats.getAverage("sr"));
-			System.out.println("Macroaverage weighted accuracy: " + stats.getAverage("wacc"));
-			System.out.println("Macroaverage TCR: " + stats.getAverage("tcr"));
-
 			System.out.println("Macro stats: " + stats.getAverage("sp") + " " + stats.getAverage("sr") + " " + stats.getAverage("wacc") + " " + stats.getAverage("tcr"));
 
 			return;
@@ -135,49 +129,6 @@ public class NaiveBayesClassifier {
 
 			return;
 		}
-
-		/*
-		corpusReader.readFeatures(new File[] {new File(directory)});
-		corpusReader.computeMutualInfo();
-		corpusReader.pruneAlphabet();
-		corpusReader.changeAllAlphabets();
-
-		System.out.println("Naive Bayes classifer initialised.");
-
-		NaiveBayesTrainer nbTrainer = new NaiveBayesTrainer();
-
-		if ( !SMOOTHING ) {
-			nbTrainer.setFeatureMultinomialEstimator(new Multinomial.MLEstimator());
-			nbTrainer.setPriorMultinomialEstimator(new Multinomial.MLEstimator());
-		}
-
-		InstanceList instances = corpusReader.getFeatureInstances();
-
-		System.out.println("Cross-validation on " + NFOLDS + " folds.");
-
-		CrossValidationIterator iter = new CrossValidationIterator(instances, NFOLDS);
-		int i = 1;
-
-		while ( iter.hasNext() ) {
-			System.out.println("Fold " + i);
-			InstanceList[] split = iter.next();
-			nbTrainer.train(split[0]); // each call to train is independent
-			NaiveBayes nbClassifier = nbTrainer.getClassifier();
-
-			ArrayList<Classification> results = nbClassifier.classify(split[1]);
-			Evaluator evaluator = new Evaluator(LAMBDA, results);
-			System.out.println("Evaluator initialised with lambda = " + LAMBDA);
-
-			double tcr = evaluator.getTotalCostRatio();
-			stats.put("tcr", tcr);
-			System.out.println(" TCR: " + tcr);
-
-			System.out.println();
-			i++;
-		}
-
-		System.out.println("Average TCR: " + stats.getAverage("tcr"));
-		*/
 	}
 
 	private static void runNaiveBayes(File[] trainDirectoriesArray, File[] testDirectoriesArray, double lambda) {
@@ -188,20 +139,27 @@ public class NaiveBayesClassifier {
 
 		corpusReader.readData(testDirectoriesArray);
 
-		System.out.println("Naive Bayes classifer initialised.");
+		NaiveBayesTrainer nbTrainer;
 
-		NaiveBayesTrainer nbTrainer = new NaiveBayesTrainer();
+		if ( MULTINOMIAL ) {
+			nbTrainer = new NaiveBayesTrainer();
 
-		if ( !SMOOTHING ) {
-			nbTrainer.setFeatureMultinomialEstimator(new Multinomial.MLEstimator());
-			nbTrainer.setPriorMultinomialEstimator(new Multinomial.MLEstimator());
+			if ( !SMOOTHING ) {
+				nbTrainer.setFeatureMultinomialEstimator(new Multinomial.MLEstimator());
+				nbTrainer.setPriorMultinomialEstimator(new Multinomial.MLEstimator());
+			}
+
+			System.out.println("Naive Bayes (multinomial) classifer initialised; smoothing: " + SMOOTHING);
+		} else {
+			nbTrainer = new NaiveBayesMBTrainer(corpusReader, SMOOTHING);
+
+			System.out.println("Naive Bayes (multivariate Bernoulli) classifer initialised; smoothing: " + SMOOTHING);
 		}
 
 		InstanceList featureInstances = corpusReader.getFeatureInstances();
 		InstanceList dataInstances = corpusReader.getDataInstances();
 
-		nbTrainer.train(featureInstances);
-		NaiveBayes nbClassifier = nbTrainer.getClassifier();
+		NaiveBayes nbClassifier = nbTrainer.train(featureInstances);
 
 		ArrayList<Classification> results = nbClassifier.classify(dataInstances);
 		Evaluator evaluator = new Evaluator(lambda, results);
