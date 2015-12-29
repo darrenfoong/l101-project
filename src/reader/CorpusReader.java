@@ -194,12 +194,11 @@ public abstract class CorpusReader {
 		Alphabet currentAlphabet = featureInstances.getAlphabet();
 		System.out.println(" Current alphabet has " + currentAlphabet.size() + " features.");
 
-		int oldIndices[] = new int[CUTOFF];
 		ArrayList<String> newFeatures = new ArrayList<String>();
 
 		for ( int i = 0; i < CUTOFF; i++ ) {
-			oldIndices[i] = mutualInfo.get(i).getX();
-			newFeatures.add(currentAlphabet.lookupObject(oldIndices[i]).toString());
+			int oldIndex = mutualInfo.get(i).getX();
+			newFeatures.add(currentAlphabet.lookupObject(oldIndex).toString());
 			// System.out.println(" Mutual info rank " + i + ": " + oldIndices[i] + " " + mutualInfo.get(i).getY());
 		}
 

@@ -15,11 +15,15 @@ import cc.mallet.types.InstanceList;
 import cc.mallet.types.Multinomial;
 
 public class NaiveBayesClassifier {
-	private static final int[] NS = null;
+	// multinomial vs multivariate Bernoulli
 	private static final boolean MULTINOMIAL = false;
+	// multinomial smoothing: LaplaceEstimator vs MEstimator
+	// multivariate Bernoulli smoothing: modified output for Distribution
 	private static final boolean SMOOTHING = false;
+	// array of n's for n-grams
+	private static final int[] NS = null;
 
-	private static CorpusReader corpusReader = null;
+	private static CorpusReader corpusReader;
 	private static String directory;
 
 	private static Statistics stats = new Statistics();
@@ -79,7 +83,6 @@ public class NaiveBayesClassifier {
 		}
 
 		if ( corpus.equals("pu1") ) {
-			// custom 10-fold cross-validation
 			System.out.println("Cross-validation on 10 folds.");
 
 			for ( int i = 1; i <= 10; i++ ) {
