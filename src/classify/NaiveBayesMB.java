@@ -1,5 +1,6 @@
-package reader;
+package classify;
 
+import reader.CorpusReader;
 import cc.mallet.classify.Classification;
 import cc.mallet.classify.NaiveBayes;
 import cc.mallet.types.FeatureVector;
@@ -27,7 +28,7 @@ public class NaiveBayesMB extends NaiveBayes {
 		double[] logpr = new double[2];
 
 		for ( int c = 0; c < logpr.length; c++ ) {
-			logpr[c] = corpusReader.cDist.getLogProbS(c, smoothing);
+			logpr[c] = corpusReader.getCDist().getLogProbS(c, smoothing);
 
 			boolean sparseVector[] = new boolean[numFeatures];
 
@@ -38,7 +39,7 @@ public class NaiveBayesMB extends NaiveBayes {
 
 			for ( int i = 0; i < numFeatures; i++ ) {
 				int value = sparseVector[i] ? 1 : 0;
-				logpr[c] += corpusReader.xcDists[i].getLogProbS(convert(c, value), smoothing) - corpusReader.cDist.getLogProbS(c, smoothing);
+				logpr[c] += corpusReader.getXCDists()[i].getLogProbS(convert(c, value), smoothing) - corpusReader.getCDist().getLogProbS(c, smoothing);
 			}
 
 			logpr[c] = Math.exp(logpr[c]);

@@ -3,7 +3,6 @@ import java.util.ArrayList;
 
 import reader.CorpusReader;
 import reader.GenSpamReader;
-import reader.NaiveBayesMBTrainer;
 import reader.PuReader;
 import reader.TrecReader;
 import utils.Evaluator;
@@ -13,6 +12,7 @@ import cc.mallet.classify.NaiveBayes;
 import cc.mallet.classify.NaiveBayesTrainer;
 import cc.mallet.types.InstanceList;
 import cc.mallet.types.Multinomial;
+import classify.NaiveBayesMBTrainer;
 
 public class NaiveBayesClassifier {
 	// multinomial vs multivariate Bernoulli

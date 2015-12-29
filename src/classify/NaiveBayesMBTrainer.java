@@ -1,5 +1,6 @@
-package reader;
+package classify;
 
+import reader.CorpusReader;
 import cc.mallet.classify.NaiveBayes;
 import cc.mallet.classify.NaiveBayesTrainer;
 import cc.mallet.types.InstanceList;

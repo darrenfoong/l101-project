@@ -22,13 +22,13 @@ import cc.mallet.types.Instance;
 import cc.mallet.types.InstanceList;
 
 public abstract class CorpusReader {
-	protected final static short SPAM = 0;
-	protected final static short HAM = 1;
+	public final static short SPAM = 0;
+	public final static short HAM = 1;
 
-	protected final static short SPAM0 = 0;
-	protected final static short SPAM1 = 1;
-	protected final static short HAM0 = 2;
-	protected final static short HAM1 = 3;
+	public final static short SPAM0 = 0;
+	public final static short SPAM1 = 1;
+	public final static short HAM0 = 2;
+	public final static short HAM1 = 3;
 
 	protected final int CUTOFF;
 
@@ -58,6 +58,18 @@ public abstract class CorpusReader {
 
 	public InstanceList getDataInstances() {
 		return dataInstances;
+	}
+
+	public Distribution getCDist() {
+		return cDist;
+	}
+
+	public Distribution[] getXDists() {
+		return xDists;
+	}
+
+	public Distribution[] getXCDists() {
+		return xcDists;
 	}
 
 	public abstract Pipe buildFeaturePipe(Alphabet dataAlphabet);
