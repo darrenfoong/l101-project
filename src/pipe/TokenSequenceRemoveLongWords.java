@@ -1,4 +1,4 @@
-package reader;
+package pipe;
 
 import java.util.Iterator;
 
