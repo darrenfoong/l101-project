@@ -44,12 +44,12 @@ public class NaiveBayesClassifier {
 				System.out.println("Starting PU1 reader.");
 				break;
 			case "genspam":
-				if ( subset == "lemm_stop" ) {
+				if ( subset.equals("lemm_stop") ) {
 					subset = "lemm";
 					stop = true;
 				}
 
-				if ( subset == "stop" ) {
+				if ( subset.equals("stop") ) {
 					subset = "bare";
 					stop = true;
 				}
@@ -61,12 +61,12 @@ public class NaiveBayesClassifier {
 				System.out.println("Starting GenSpam reader.");
 				break;
 			case "trec07p":
-				if ( subset == "lemm_stop" ) {
+				if ( subset.equals("lemm_stop") ) {
 					subset = "lemm";
 					stop = true;
 				}
 
-				if ( subset == "stop" ) {
+				if ( subset.equals("stop") ) {
 					subset = "bare";
 					stop = true;
 				}
