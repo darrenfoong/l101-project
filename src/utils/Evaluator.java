@@ -68,6 +68,10 @@ public class Evaluator {
 		double spamProb = labeling.valueAtLocation(0);
 		double hamProb = labeling.valueAtLocation(1);
 
+		if ( lambda == 0 ) {
+			return "spam";
+		}
+
 		if ( spamProb > lambda * hamProb ) {
 			return "spam";
 		} else {
