@@ -127,6 +127,8 @@ public class NaiveBayesClassifier {
 						stats.getAverage("wacc") + " " +
 						evaluator.getWeightedErrorBaseline()/stats.getAverage("werr"));
 
+			System.out.println("Macro ROC: " + stats.getAverage("1-hr") + " " + stats.getAverage("sr"));
+
 			return;
 		}
 
@@ -181,6 +183,8 @@ public class NaiveBayesClassifier {
 		stats.put("wacc", evaluator.getWeightedAccuracy());
 		stats.put("werr", evaluator.getWeightedError());
 
+		stats.put("1-hr", 1-evaluator.getHamRecall());
+
 		stats.put("totalSpam", evaluator.getTotalSpam());
 		stats.put("totalHam", evaluator.getTotalHam());
 		stats.put("spamToSpam", evaluator.getSpamToSpam());
@@ -190,6 +194,8 @@ public class NaiveBayesClassifier {
 
 		System.out.println(evaluator.getRawStats());
 		System.out.println(evaluator.getStats());
+
+		System.out.println("ROC: " + (1-evaluator.getHamRecall()) + " " + evaluator.getSpamRecall());
 
 		System.out.println();
 	}
