@@ -189,7 +189,7 @@ public class Evaluator {
 		for ( double lambda : lambdas ) {
 			this.lambda = lambda;
 			processResults();
-			roc.add(new DoubleDoublePair(getSpamRecall(), getHamRecall()));
+			roc.add(new DoubleDoublePair(1-getHamRecall(), getSpamRecall()));
 		}
 
 		this.lambda = oldLambda;
