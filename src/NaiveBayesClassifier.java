@@ -74,7 +74,7 @@ public class NaiveBayesClassifier {
 				System.out.println("Subset " + subset + " used.");
 
 				corpusReader = new TrecReader(cutoff, NS, stop);
-				directory = "data/trec07p/";
+				directory = "data/trec07p/" + subset + "/";
 				System.out.println("Starting TREC 2007 reader.");
 				break;
 			default:
@@ -198,5 +198,20 @@ public class NaiveBayesClassifier {
 		System.out.println("ROC: " + (1-evaluator.getHamRecall()) + " " + evaluator.getSpamRecall());
 
 		System.out.println();
+
+		/*
+		ArrayList<Double> lambdas = new ArrayList<Double>();
+		lambdas.add(0.0);
+
+		for ( int i = -20; i <= 20; i++ ) {
+			lambdas.add(Math.pow(10, i));
+		}
+
+		ArrayList<DoubleDoublePair> roc = evaluator.getRoc(lambdas);
+
+		for ( DoubleDoublePair ddp : roc ) {
+			System.out.println(ddp.getX() + " " + ddp.getY());
+		}
+		*/
 	}
 }
